@@ -407,6 +407,99 @@ input:focus {
     color: #2ecc71;
 }
 
+
 .trend-flat {
     color: #95a5a6;
+}
+
+/* Mobile Optimizations & Button Classes */
+.privacy-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    /* Bigger icon */
+    cursor: pointer;
+    padding: 8px;
+    /* Larger hit area */
+    opacity: 0.6;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-btn {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 6px 10px;
+    /* Bigger touch area */
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 8px;
+    min-height: 32px;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    color: #3498db;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 8px;
+    padding: 8px;
+    min-height: 44px;
+}
+
+.price-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Mobile Layout */
+@media (max-width: 480px) {
+    .transaction-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-info {
+        width: 100%;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .card-actions {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-info h3 {
+        /* Ensure text wraps nicely */
+        font-size: 16px;
+        line-height: 1.4;
+        white-space: normal;
+    }
+
+    .primary-btn,
+    .save-btn {
+        padding: 18px;
+        /* Easier to tap */
+    }
+
+    /* Wrap header actions if needed */
+    .header-actions {
+        gap: 4px;
+    }
+
+    .icon-btn {
+        padding: 12px;
+        /* Bigger touch targets for header icons */
+    }
 }

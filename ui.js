@@ -103,13 +103,13 @@ function renderList(filterTerm = '') {
                 </div>
             </div>
             <div class="card-actions">
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="price-row">
                     <span class="price">${displayPrice}</span>
-                    <button onclick="toggleItemPrivacy(${t.id})" style="background: none; border: none; font-size: 16px; cursor: pointer; padding: 0; opacity: 0.6;">${itemEyeIcon}</button>
+                    <button onclick="toggleItemPrivacy(${t.id})" class="privacy-toggle-btn">${itemEyeIcon}</button>
                 </div>
                 <div class="action-buttons">
-                    <button onclick="togglePaymentStatus(${t.id})" style="background: none; border: none; color: ${statusColor}; font-weight: bold; cursor: pointer; margin-right: 8px; font-size: 11px; border: 1px solid ${statusColor}; border-radius: 4px; padding: 2px 6px;">${statusText}</button>
-                    <button class="edit-btn" onclick="editTransaction(${t.id})" style="background: none; border: none; color: #3498db; font-weight: 500; cursor: pointer; margin-right: 8px;">Edit</button>
+                    <button onclick="togglePaymentStatus(${t.id})" class="status-btn" style="color: ${statusColor}; border-color: ${statusColor};">${statusText}</button>
+                    <button class="edit-btn" onclick="editTransaction(${t.id})">Edit</button>
                     <button class="delete-btn" onclick="openDeleteModal(${t.id})">Delete</button>
                     <button class="copy-btn" onclick="${isPaid ? `copyReceipt(${t.id})` : `alert('🚫 Cannot copy receipt for UNPAID items.\\nPlease pay the supplier first.')`}" style="${isPaid ? '' : 'opacity: 0.5; cursor: not-allowed;'}">Copy Receipt</button>
                 </div>
