@@ -98,7 +98,7 @@ function renderList(filterTerm = '') {
                 <h3>${categoryLabel}${displaySupplier} <span style="font-size: 0.8em; margin-left: 5px;">${statusIcon}</span></h3>
                 <p>${t.item} • ${t.weight}kg ${isItemHidden ? '' : `@ ${formatCurrency(t.cost)}/kg`}</p>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <p style="font-size: 12px; margin-top: 4px; color: #aaa;">${t.date}</p>
+                    <p style="font-size: 12px; margin-top: 4px; color: #7f8c8d;">${t.date}</p>
                     ${t.timestamp ? `<p style="font-size: 10px; margin-top: 4px; color: #bdc3c7;">Added: ${new Date(t.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}</p>` : ''}
                 </div>
             </div>

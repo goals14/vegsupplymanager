@@ -293,13 +293,20 @@ label {
     color: var(--dark);
 }
 
-input {
+input,
+select {
     width: 100%;
     padding: 12px;
     border: 2px solid var(--light);
     border-radius: 8px;
     font-size: 16px;
-    outline: none;
+    /* Prevent zoom on mobile */
+    background-color: #ffffff;
+    /* Force white background */
+    color: #333333;
+    /* Force dark text */
+    -webkit-appearance: none;
+    /* Remove default iOS stylings */
 }
 
 input:focus {
