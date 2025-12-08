@@ -376,7 +376,7 @@ function updateModeUI() {
         modeBtn.textContent = '🔄 Client View';
         modeBtn.style.background = 'rgba(255,255,255,0.4)';
         mainHeader.style.background = 'linear-gradient(135deg, #2980b9, #2c3e50)'; // Blue theme
-        appTitle.textContent = 'Client Dashboard';
+        appTitle.innerHTML = 'Client Dashboard <span style="font-size: 12px; opacity: 0.5;">v5.7</span>';
         privacyBtn.classList.add('hidden'); // Hide privacy toggle
         dataBtn.classList.add('hidden'); // Hide data options (Safety)
         renderClientDashboard();
@@ -387,7 +387,7 @@ function updateModeUI() {
         modeBtn.textContent = '🔄 Supplier';
         modeBtn.style.background = 'rgba(255,255,255,0.2)';
         mainHeader.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)'; // Green theme
-        appTitle.textContent = 'Veg Manager';
+        appTitle.innerHTML = 'Terra Oracle <span style="font-size: 12px; opacity: 0.5;">v5.7</span>';
         privacyBtn.classList.remove('hidden');
         dataBtn.classList.remove('hidden');
         renderList(searchInput.value.toLowerCase());
