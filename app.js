@@ -415,21 +415,30 @@ document.getElementById('saveCloudBtn').addEventListener('click', () => {
 
 // Data Management (Backup/Restore/Export)
 document.getElementById('backupBtn').addEventListener('click', () => {
-    const data = {
-        transactions: transactions,
-        clients: savedClients,
-        suppliers: savedSuppliers,
-        timestamp: new Date().toISOString()
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `veg_backup_${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const btn = document.getElementById('backupBtn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Preparing...';
+
+    setTimeout(() => {
+        const data = {
+            transactions: transactions,
+            clients: savedClients,
+            suppliers: savedSuppliers,
+            timestamp: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `veg_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert('Backup started! \nFile is downloading to your device.');
+        btn.textContent = originalText;
+    }, 100);
 });
 
 document.getElementById('restoreBtn').addEventListener('click', () => {
@@ -452,7 +461,7 @@ document.getElementById('restoreInput').addEventListener('change', (e) => {
                     saveData();
                     updateUI();
                     updateLists();
-                    alert('Data restored successfully!');
+                    alert('Data restored successfully! ✅');
                     document.getElementById('dataModal').classList.add('hidden');
                 }
             } else {
@@ -461,6 +470,8 @@ document.getElementById('restoreInput').addEventListener('change', (e) => {
         } catch (err) {
             console.error('Restore failed:', err);
             alert('Error reading file.');
+        } finally {
+            e.target.value = ''; // Reset input so same file can be selected again
         }
     };
     reader.readAsText(file);
