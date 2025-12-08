@@ -387,15 +387,30 @@ document.getElementById('closeCloudModal').addEventListener('click', () => {
 });
 
 document.getElementById('saveCloudBtn').addEventListener('click', () => {
-    const url = document.getElementById('cloudUrlInput').value.trim();
+    const btn = document.getElementById('saveCloudBtn');
+    const urlInput = document.getElementById('cloudUrlInput');
+    const url = urlInput.value.trim();
 
-    if (url) {
-        setSyncUrl(url);
-        alert('Cloud URL saved! Attempting sync...');
-        document.getElementById('cloudModal').classList.add('hidden');
-    } else {
-        alert('Please enter a valid URL.');
-    }
+    // Visual Feedback
+    const originalText = btn.textContent;
+    btn.textContent = 'Saving...';
+    btn.style.opacity = '0.7';
+
+    setTimeout(() => {
+        if (url) {
+            setSyncUrl(url);
+            // Close modal immediately for better responsiveness
+            document.getElementById('cloudModal').classList.add('hidden');
+            // Show toast/alert after a slight delay
+            setTimeout(() => alert('Cloud URL saved! Sync started in background ☁️'), 300);
+        } else {
+            alert('Please enter a valid URL.');
+        }
+
+        // Reset button
+        btn.textContent = originalText;
+        btn.style.opacity = '1';
+    }, 200); // Artificial delay to show the click registered
 });
 
 // Network Status Listeners
