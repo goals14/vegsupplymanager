@@ -22,6 +22,8 @@ body {
     color: var(--dark);
     padding-bottom: 80px;
     /* Space for bottom interaction if needed */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
 }
 
 .app-container {
@@ -245,6 +247,10 @@ h2 {
     border-radius: 20px 20px 0 0;
     padding: 24px;
     animation: slideUp 0.3s ease-out;
+    max-height: 85vh;
+    /* Prevent modal from being taller than screen */
+    overflow-y: auto;
+    /* Allow scrolling inside modal */
 }
 
 @keyframes slideUp {
@@ -506,9 +512,15 @@ input:focus {
 
     .card-info h3 {
         /* Ensure text wraps nicely */
-        font-size: 16px;
-        line-height: 1.4;
+        font-size: 15px;
+        /* Reduced from 16px */
+        line-height: 1.3;
         white-space: normal;
+    }
+
+    .price {
+        font-size: 16px;
+        /* Reduced from 18px */
     }
 
     .primary-btn,
