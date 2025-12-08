@@ -475,9 +475,26 @@ input:focus {
 
     .card-actions {
         width: 100%;
-        flex-direction: row;
+        flex-direction: column;
+        /* Stack actions below info */
+        align-items: flex-start;
+        /* Align left */
+        gap: 12px;
+    }
+
+    .price-row {
+        width: 100%;
         justify-content: space-between;
-        align-items: center;
+        /* Spread price and eye icon */
+        margin-bottom: 8px;
+    }
+
+    .action-buttons {
+        width: 100%;
+        justify-content: space-between;
+        /* Spread buttons evenly */
+        flex-wrap: wrap;
+        /* Allow wrapping if really needed */
     }
 
     .card-info h3 {
