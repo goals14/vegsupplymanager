@@ -413,6 +413,93 @@ document.getElementById('saveCloudBtn').addEventListener('click', () => {
     }, 200); // Artificial delay to show the click registered
 });
 
+// Data Management (Backup/Restore/Export)
+document.getElementById('backupBtn').addEventListener('click', () => {
+    const data = {
+        transactions: transactions,
+        clients: savedClients,
+        suppliers: savedSuppliers,
+        timestamp: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `veg_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+    document.getElementById('restoreInput').click();
+});
+
+document.getElementById('restoreInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const data = JSON.parse(event.target.result);
+            if (data.transactions && Array.isArray(data.transactions)) {
+                if (confirm(`Replace current data with backup from ${data.timestamp || 'unknown date'}?`)) {
+                    transactions = data.transactions;
+                    savedClients = data.clients || [];
+                    savedSuppliers = data.suppliers || [];
+                    saveData();
+                    updateUI();
+                    updateLists();
+                    alert('Data restored successfully!');
+                    document.getElementById('dataModal').classList.add('hidden');
+                }
+            } else {
+                alert('Invalid backup file.');
+            }
+        } catch (err) {
+            console.error('Restore failed:', err);
+            alert('Error reading file.');
+        }
+    };
+    reader.readAsText(file);
+});
+
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    if (transactions.length === 0) {
+        alert('No data to export.');
+        return;
+    }
+
+    // CSV Header
+    let csv = 'Date,Client,Supplier,Item,Weight,Cost,Markup,Total Cost,Total Profit,Status\n';
+
+    // CSV Rows
+    transactions.forEach(t => {
+        const totalCost = t.weight * t.cost;
+        const totalProfit = t.weight * t.markup;
+        const status = t.isPaid ? 'PAID' : 'UNPAID';
+
+        // Escape commas in strings
+        const safeClient = (t.client || '').replace(/,/g, ' ');
+        const safeSupplier = t.supplier.replace(/,/g, ' ');
+        const safeItem = t.item.replace(/,/g, ' ');
+
+        csv += `${t.date},${safeClient},${safeSupplier},${safeItem},${t.weight},${t.cost},${t.markup},${totalCost},${totalProfit},${status}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `veg_transactions_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
+
 // Network Status Listeners
 window.addEventListener('online', () => {
     console.log('Online: Attempting sync...');
