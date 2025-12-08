@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Veg Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header id="mainHeader">
+            <h1 id="appTitle">Veg Manager</h1>
+            <div class="header-actions">
+                <button id="modeBtn" class="icon-btn"
+                    style="font-size: 14px; width: auto; padding: 0 12px; border-radius: 20px; background: rgba(255,255,255,0.2);">
+                    🔄 Supplier
+                </button>
+                <button id="privacyBtn" class="icon-btn" aria-label="Toggle Privacy">
+                    👁️
+                </button>
+                <button id="dataBtn" class="icon-btn" aria-label="Data Options">
+                    💾
+                </button>
+                <button id="cloudBtn" class="icon-btn" aria-label="Cloud Sync" style="font-size: 16px;">
+                    ☁️
+                </button>
+            </div>
+        </header>
+
+        <!-- Outstanding Balance Alert -->
+        <div id="outstandingAlert" class="outstanding-alert" style="display: none;" onclick="openRemittanceModal()">
+            ⚠️ Outstanding Balance: <span id="outstandingAmount">₱0.00</span>
+        </div>
+
+        <!-- SUPPLIER VIEW (Default) -->
+        <div id="supplierView">
+            <section class="summary-card" style="position: relative;">
+                <button id="summaryPrivacyBtn" class="icon-btn"
+                    style="position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 18px; opacity: 0.8;">👁️</button>
+                <div class="summary-item">
+                    <span class="label">Total Weight</span>
+                    <span class="value" id="todayWeight">0 kg</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total Cost</span>
+                    <span class="value" id="todayCost">₱0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total Profit</span>
+                    <span class="value" id="todayProfit">₱0</span>
+                </div>
+                <button id="listPrivacyBtn" class="icon-btn"
+                    style="background: none; border: none; font-size: 20px;">👁️</button>
+            </section>
+            <div class="search-container" style="margin-bottom: 16px;">
+                <input type="search" id="searchInput" placeholder="🔍 Search supplier, item, or category..."
+                    style="width: 100%; padding: 12px; border: 2px solid var(--light); border-radius: 8px; font-size: 16px;">
+            </div>
+            <section class="actions" style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <button id="addBtn" class="primary-btn" style="flex: 2;">+ New Transaction</button>
+                <button id="remittanceBtn" class="primary-btn" style="flex: 1; background: #8e44ad; font-size: 14px;">💸
+                    Pay</button>
+                <button id="addSupplierBtn" class="primary-btn" style="flex: 1; background: #2c3e50; font-size: 14px;">+
+                    Supplier</button>
+            </section>
+            <div id="transactionList" class="list-container">
+                <!-- Transactions will appear here -->
+                <div class="empty-state">No transactions yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLIENT VIEW (Hidden by default) -->
+    <div id="clientView" class="hidden">
+        <section class="summary-card" style="background: linear-gradient(135deg, #2980b9, #2c3e50);">
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label style="color: rgba(255,255,255,0.8);">Select Client</label>
+                <div style="display: flex; gap: 8px;">
+                    <select id="clientSelector"
+                        style="flex: 1; padding: 8px; border-radius: 6px; border: none; font-size: 16px;">
+                        <option value="All">All Clients</option>
+                    </select>
+                    <button id="addClientBtn"
+                        style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 6px; width: 40px; font-size: 20px; cursor: pointer;">+</button>
+                </div>
+            </div>
+            <div class="summary-item">
+                <span class="label" style="color: rgba(255,255,255,0.8);">Total Volume</span>
+                <span class="value" id="clientVolume">0 kg</span>
+            </div>
+            <div class="summary-item">
+                <span class="label" style="color: rgba(255,255,255,0.8);">Avg. Selling Price</span>
+                <span class="value" id="clientAvgPrice">₱0.00 /kg</span>
+            </div>
+        </section>
+
+        <section class="actions">
+            <button id="clientInvoiceBtn" class="primary-btn" style="background: #2980b9;">🧾 Generate
+                Invoice</button>
+        </section>
+
+        <!-- TRENDS DASHBOARD -->
+        <section class="trends" style="margin-bottom: 24px;">
+            <h2 style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                <span>📊 Price Trends</span>
+                <span style="font-size: 12px; font-weight: 400; color: #7f8c8d;">Month vs Last Month</span>
+            </h2>
+            <div class="search-container" style="margin-bottom: 16px;">
+                <input type="search" id="trendSearchInput" placeholder="🔍 Compare items (e.g. Cucumber)..."
+                    style="width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 16px;">
+            </div>
+            <div id="trendList" class="list-container">
+                <!-- Trend Cards will appear here -->
+                <div class="empty-state">Select a client and search to see trends.</div>
+            </div>
+        </section>
+
+        <section class="history">
+            <h2 style="margin-bottom: 16px;">Sales History</h2>
+            <div id="clientTransactionList" class="list-container">
+                <!-- Safe Transactions will appear here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal for New Transaction -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Delivery</h2>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category"
+                        style="width: 100%; padding: 12px; border: 2px solid var(--light); border-radius: 8px; font-size: 16px; background: white;"
+                        required>
+                        <option value="Baguio Market">Baguio Market</option>
+                        <option value="Fixed Priced">Fixed Priced</option>
+                        <option value="Trading Post">Trading Post</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Client / Factory</label>
+                    <input type="text" id="client" placeholder="e.g. Factory A" list="clientList">
+                    <datalist id="clientList">
+                        <!-- Will be populated dynamically -->
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label>Supplier</label>
+                    <input type="text" id="supplier" placeholder="e.g. Mang Juan" list="supplierList" required>
+                    <datalist id="supplierList">
+                        <!-- Will be populated dynamically -->
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label>Vegetable</label>
+                    <input type="text" id="item" placeholder="e.g. Carrots" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Weight (kg)</label>
+                        <input type="number" id="weight" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cost (₱/kg)</label>
+                        <input type="number" id="cost" step="0.1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Markup (₱/kg)</label>
+                    <input type="number" id="markup" step="0.1" value="0">
+                    <small>Profit: <span id="profitPreview">₱0</span></small>
+                </div>
+                <div class="form-group"
+                    style="flex-direction: row; align-items: center; gap: 10px; margin-top: 10px; background: #f0fff4; padding: 10px; border-radius: 8px; border: 1px solid #c3e6cb;">
+                    <input type="checkbox" id="isPaidNow" style="width: auto; margin: 0;">
+                    <label for="isPaidNow" style="margin: 0; font-weight: bold; color: #27ae60; cursor: pointer;">Paid
+                        Cash Immediately? 💵</label>
+                </div>
+                <button id="saveBtn" type="submit" class="save-btn">Save Transaction</button>
+                <input type="hidden" id="editTransactionId">
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Options Modal -->
+    <div id="dataModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Data Options</h2>
+                <button id="closeDataModal" class="close-btn">&times;</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button id="exportCsvBtn" class="primary-btn" style="background: #27ae60;">
+                    📥 Export to CSV (Excel)
+                </button>
+                <button id="backupBtn" class="primary-btn" style="background: #2980b9;">
+                    💾 Backup Data (Save File)
+                </button>
+                <button id="restoreBtn" class="primary-btn" style="background: #e67e22;">
+                    🔄 Restore Data (Load File)
+                </button>
+                <input type="file" id="restoreInput" accept=".json" style="display: none;">
+                <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center;">
+                    <strong>Backup</strong> saves a file to your device.<br>
+                    <strong>Restore</strong> loads that file back.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Confirmation Modal -->
+    <div id="paymentModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Payment</h2>
+            </div>
+            <p style="margin-bottom: 20px; font-size: 16px;">Mark this transaction as <strong>PAID</strong>?</p>
+            <div style="display: flex; gap: 12px;">
+                <button id="cancelPayment" class="primary-btn" style="background: #95a5a6;">Cancel</button>
+                <button id="confirmPayment" class="primary-btn" style="background: #27ae60;">Confirm Paid</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Delete Transaction</h2>
+            </div>
+            <p style="margin-bottom: 20px; font-size: 16px; color: #e74c3c;">Are you sure you want to delete this
+                transaction? This cannot be undone.</p>
+            <div style="display: flex; gap: 12px;">
+                <button id="cancelDelete" class="primary-btn" style="background: #95a5a6;">Cancel</button>
+                <button id="confirmDelete" class="primary-btn" style="background: #e74c3c;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remittance Modal -->
+    <div id="remittanceModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pay Supplier</h2>
+                <button id="closeRemittanceModal" class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Select Supplier</label>
+                <select id="remittanceSupplier"
+                    style="width: 100%; padding: 12px; border: 2px solid var(--light); border-radius: 8px; font-size: 16px;">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date (Optional Filter)</label>
+                <input type="date" id="remittanceDate">
+                <small style="color: #666;">Leave empty to see ALL unpaid items.</small>
+            </div>
+
+            <!-- Preview Area -->
+            <div id="remittancePreview"
+                style="background: #f8f9fa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 16px; white-space: pre-wrap; font-family: monospace; font-size: 13px; color: #2c3e50; max-height: 200px; overflow-y: auto; display: none;">
+            </div>
+
+            <button id="generateRemittanceBtn" class="save-btn" style="background: #8e44ad;">Generate Payment
+                List</button>
+            <button id="markPaidBtn" class="save-btn" style="background: #27ae60; display: none; margin-top: 10px;">✅
+                Mark These as PAID</button>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div id="invoiceModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Generate Invoice</h2>
+                <button id="closeInvoiceModal" class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="invoiceDate">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Short Trip Cost</label>
+                    <input type="number" id="shortTripCost" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Freight Cost</label>
+                    <input type="number" id="freightCost" placeholder="0">
+                </div>
+            </div>
+
+            <div id="invoicePreview"
+                style="background: #f8f9fa; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 16px; white-space: pre-wrap; font-family: monospace; font-size: 13px; color: #2c3e50; max-height: 200px; overflow-y: auto; display: none;">
+            </div>
+
+            <button id="generateInvoiceBtn" class="save-btn" style="background: #2980b9;">Generate & Copy</button>
+        </div>
+    </div>
+
+    <!-- Name Modal (For adding new Client/Supplier) -->
+    <div id="nameModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="nameModalTitle">Add New</h2>
+                <button id="closeNameModal" class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label id="nameModalLabel">Name</label>
+                <input type="text" id="newNameInput" placeholder="Enter name...">
+            </div>
+            <button id="saveNameBtn" class="save-btn">Save</button>
+        </div>
+    </div>
+
+    <!-- Generic Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="confirmTitle">Confirm Action</h2>
+            </div>
+            <p id="confirmMessage" style="margin-bottom: 20px; font-size: 16px;">Are you sure?</p>
+            <div style="display: flex; gap: 12px;">
+                <button id="confirmCancelBtn" class="primary-btn" style="background: #95a5a6;">Cancel</button>
+                <button id="confirmOkBtn" class="primary-btn" style="background: #27ae60;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloud Setup Modal -->
+    <div id="cloudModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>☁️ Google Sheets Sync</h2>
+                <button id="closeCloudModal" class="close-btn">&times;</button>
+            </div>
+            <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
+                Paste your Google Apps Script Web App URL here to enable cloud sync.
+            </p>
+            <div class="form-group">
+                <label>Script URL</label>
+                <input type="text" id="cloudUrlInput" placeholder="https://script.google.com/..."
+                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <button id="saveCloudBtn" class="save-btn" style="background: #3498db;">Save & Sync</button>
+            <p style="font-size: 12px; color: #999; margin-top: 12px; text-align: center;">
+                Data is saved locally first, then synced when online.
+            </p>
+        </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="storage.js"></script>
+    <script src="ui.js"></script>
+    <script src="app.js?v=4"></script>
+</body>
+
+</html>
