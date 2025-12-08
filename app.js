@@ -12,6 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updateClientSelector();
 });
 
+// Privacy Toggle for Summary
+if (document.getElementById('summaryPrivacyBtn')) {
+    document.getElementById('summaryPrivacyBtn').addEventListener('click', () => {
+        isSummaryHidden = !isSummaryHidden;
+        updateSummary(document.getElementById('searchInput').value.toLowerCase());
+        document.getElementById('summaryPrivacyBtn').textContent = isSummaryHidden ? '🔒' : '👁️';
+    });
+}
+
 // Mode Toggle
 document.getElementById('modeBtn').addEventListener('click', () => {
     isClientMode = !isClientMode;
