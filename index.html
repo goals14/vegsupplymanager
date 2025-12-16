@@ -18,7 +18,7 @@
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="logo.png" alt="Terra Oracle" class="app-logo">
                 <h1 id="appTitle" style="margin: 0;">Terra Oracle <span
-                        style="font-size: 12px; opacity: 0.5; font-family: monospace;">v6.0</span></h1>
+                        style="font-size: 12px; opacity: 0.5; font-family: monospace;">v6.1</span></h1>
             </div>
             <div class="header-actions">
                 <button id="modeBtn" class="icon-btn"
@@ -204,19 +204,29 @@
                         <label>Cost (₱/kg)</label>
                         <input type="number" id="cost" step="0.1" required>
                     </div>
-                <div class="form-group">
-                    <label>Markup (₱/kg)</label>
-                    <input type="number" id="markup" step="0.1" value="0">
-                    <small>Profit: <span id="profitPreview">₱0</span></small>
-                </div>
-                <div class="form-group"
-                    style="flex-direction: row; align-items: center; gap: 10px; margin-top: 10px; background: #f0fff4; padding: 10px; border-radius: 8px; border: 1px solid #c3e6cb;">
-                    <input type="checkbox" id="isPaidNow" style="width: auto; margin: 0;">
-                    <label for="isPaidNow" style="margin: 0; font-weight: bold; color: #27ae60; cursor: pointer;">Paid
-                        Cash Immediately? 💵</label>
-                </div>
-                <button id="saveBtn" type="submit" class="save-btn">Save Transaction</button>
-                <input type="hidden" id="editTransactionId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Markup (₱/kg)</label>
+                            <input type="number" id="markup" step="0.1" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Est. Profit</label>
+                            <div class="readonly-field" id="profitPreview">₱0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-card-wrapper">
+                        <input type="checkbox" id="isPaidNow" class="custom-checkbox">
+                        <label for="isPaidNow" class="checkbox-label">
+                            <span class="check-icon">💵</span>
+                            <div class="check-text">
+                                <span class="check-title">Mark as Paid</span>
+                                <span class="check-subtitle">Cash payment immediately</span>
+                            </div>
+                        </label>
+                    </div>
+                    <button id="saveBtn" type="submit" class="save-btn">Save Transaction</button>
+                    <input type="hidden" id="editTransactionId">
             </form>
         </div>
     </div>
