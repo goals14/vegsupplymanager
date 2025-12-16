@@ -240,6 +240,26 @@ h1 {
     color: var(--primary);
     font-family: 'Consolas', monospace;
     text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    word-break: break-all;
+    /* Prevent overflow */
+    line-height: 1.2;
+}
+
+@media (max-width: 400px) {
+    .summary-item .value {
+        font-size: 16px;
+        /* Smaller font for mobile */
+    }
+
+    .summary-item .label {
+        font-size: 10px;
+    }
+
+    .summary-card {
+        padding: var(--space-md);
+        gap: 4px;
+        /* Reduce gap */
+    }
 }
 
 /* Transaction List & Cards */
@@ -367,6 +387,21 @@ h1 {
     font-size: 12px;
     cursor: pointer;
     font-weight: 600;
+    white-space: nowrap;
+    /* Prevent text wrapping inside button */
+}
+
+@media (max-width: 400px) {
+    .action-btn {
+        padding: 6px 8px;
+        /* Tighter buttons */
+        font-size: 11px;
+    }
+
+    .action-buttons {
+        gap: 6px !important;
+        /* Override inline style gap if needed, or rely on tight packing */
+    }
 }
 
 .action-btn.pay {
