@@ -4,6 +4,10 @@
 // Note: Many elements are already selected in ui.js, but we re-select here for clarity in event binding
 // or we could rely on them being global if we exported them, but local selection is safer.
 
+// Global State (Shared between ui.js and app.js)
+window.transactionToPay = null;
+window.transactionToDelete = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('date').valueAsDate = new Date();
     renderList();
