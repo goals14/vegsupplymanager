@@ -4,7 +4,8 @@
     --bg-surface: #161b18;
     --bg-glass: rgba(22, 27, 24, 0.85);
 
-    --primary: #2ecc71;         /* Terminal Green */
+    --primary: #2ecc71;
+    /* Terminal Green */
     --primary-dim: #27ae60;
     --primary-glow: rgba(46, 204, 113, 0.3);
 
@@ -14,7 +15,8 @@
 
     --text-main: #ecf0f1;
     --text-muted: #95a5a6;
-    --text-dark: #2c3e50;       /* For light badges if needed */
+    --text-dark: #2c3e50;
+    /* For light badges if needed */
 
     --border: #2c3e50;
     --border-bright: #2ecc71;
@@ -29,7 +31,7 @@
     --space-lg: 24px;
     --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
     --shadow-glow: 0 0 15px var(--primary-glow);
-    
+
     /* Transitions */
     --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -45,9 +47,11 @@
 body {
     background-color: var(--bg-root);
     color: var(--text-main);
-    padding-bottom: 100px;
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+    /* Safe area support */
     overflow-x: hidden;
-    min-height: 100vh;
+    min-height: 100dvh;
+    /* Dynamic Viewport Height */
 }
 
 /* Background Pattern (Subtle Grind) */
@@ -58,7 +62,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
+    background-image:
         linear-gradient(rgba(46, 204, 113, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(46, 204, 113, 0.03) 1px, transparent 1px);
     background-size: 30px 30px;
@@ -140,8 +144,15 @@ h1 {
 }
 
 @keyframes alertPulse {
-    0%, 100% { box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2); }
-    50% { box-shadow: 0 4px 20px rgba(231, 76, 60, 0.4); }
+
+    0%,
+    100% {
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 4px 20px rgba(231, 76, 60, 0.4);
+    }
 }
 
 #toast-container {
@@ -173,12 +184,26 @@ h1 {
     backdrop-filter: blur(8px);
 }
 
-.toast.success { border-color: var(--primary); color: var(--primary); }
-.toast.error { border-color: var(--accent-red); color: var(--accent-red); }
+.toast.success {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.toast.error {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
 
 @keyframes toastSlideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* --- Cards --- */
@@ -290,11 +315,21 @@ h1 {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.badge.success { background: rgba(46, 204, 113, 0.2); color: var(--primary); border-color: var(--primary); }
-.badge.danger { background: rgba(231, 76, 60, 0.2); color: var(--accent-red); border-color: var(--accent-red); }
+.badge.success {
+    background: rgba(46, 204, 113, 0.2);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.badge.danger {
+    background: rgba(231, 76, 60, 0.2);
+    color: var(--accent-red);
+    border-color: var(--accent-red);
+}
 
 /* --- Buttons --- */
-.primary-btn, .save-btn {
+.primary-btn,
+.save-btn {
     background: var(--primary);
     color: #000;
     border: none;
@@ -310,7 +345,8 @@ h1 {
     box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
 }
 
-.primary-btn:active, .save-btn:active {
+.primary-btn:active,
+.save-btn:active {
     transform: scale(0.96);
     box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2);
 }
@@ -321,7 +357,7 @@ h1 {
     margin-bottom: var(--space-lg);
 }
 
-.action-btn { 
+.action-btn {
     /* For list item actions */
     background: none;
     border: 1px solid var(--border);
@@ -333,11 +369,19 @@ h1 {
     font-weight: 600;
 }
 
-.action-btn.pay { border-color: var(--primary); color: var(--primary); }
-.action-btn.delete { border-color: var(--accent-red); color: var(--accent-red); }
+.action-btn.pay {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.action-btn.delete {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
 
 /* --- Inputs --- */
-input, select {
+input,
+select {
     width: 100%;
     padding: 14px;
     background: var(--bg-surface);
@@ -349,7 +393,8 @@ input, select {
     transition: border 0.2s;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.1);
 }
@@ -359,11 +404,96 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0.5;
 }
 
+.readonly-field {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    color: var(--primary);
+    font-family: 'Consolas', monospace;
+    font-weight: 700;
+    text-align: right;
+}
+
+/* Custom Checkbox Card */
+.checkbox-card-wrapper {
+    position: relative;
+    margin-top: var(--space-sm);
+}
+
+.custom-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.check-icon {
+    font-size: 24px;
+    filter: grayscale(1);
+    transition: filter 0.2s;
+}
+
+.check-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.check-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-main);
+}
+
+.check-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Checked State */
+.custom-checkbox:checked~.checkbox-label {
+    background: rgba(46, 204, 113, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+}
+
+.custom-checkbox:checked~.checkbox-label .check-icon {
+    filter: grayscale(0);
+}
+
+.custom-checkbox:checked~.checkbox-label .check-title {
+    color: var(--primary);
+}
+
 /* --- Modals --- */
 .modal {
-    background: rgba(0, 0, 0, 0.85); /* Darker backdrop */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh;
+    /* Full dynamic height */
+    background: rgba(0, 0, 0, 0.85);
+    /* Darker backdrop */
     backdrop-filter: blur(5px);
     z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    /* Bottom sheet */
 }
 
 .modal-content {
@@ -371,7 +501,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-top: 2px solid var(--primary);
     border-radius: 24px 24px 0 0;
     color: var(--text-main);
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 600px;
+    max-height: 85dvh;
+    /* Prevent covering top info */
+    overflow-y: auto;
+    padding: 24px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    /* Keyboard/Home bar safe */
+    animation: slideUp 0.3s var(--ease-out);
 }
 
 .modal-header h2 {
@@ -379,17 +518,32 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-weight: 700;
 }
 
-.close-btn { 
-    color: var(--text-muted); 
+.close-btn {
+    color: var(--text-muted);
     transition: color 0.2s;
 }
-.close-btn:hover { color: var(--accent-red); }
+
+.close-btn:hover {
+    color: var(--accent-red);
+}
 
 /* --- Utilities --- */
-.hidden { display: none !important; }
-.text-green { color: var(--primary); }
-.text-red { color: var(--accent-red); }
-.text-sm { font-size: 12px; opacity: 0.7; }
+.hidden {
+    display: none !important;
+}
+
+.text-green {
+    color: var(--primary);
+}
+
+.text-red {
+    color: var(--accent-red);
+}
+
+.text-sm {
+    font-size: 12px;
+    opacity: 0.7;
+}
 
 /* Custom Checkbox */
 .checkbox-wrapper {
@@ -404,13 +558,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Animations */
 @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Mobile Tweaks */
@@ -419,6 +583,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         flex-direction: column;
         gap: 12px;
     }
+
     .card-actions {
         width: 100%;
         flex-direction: row;
@@ -426,6 +591,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         align-items: center;
         margin-top: 8px;
         padding-top: 8px;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 }
