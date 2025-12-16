@@ -4,10 +4,6 @@
 // Note: Many elements are already selected in ui.js, but we re-select here for clarity in event binding
 // or we could rely on them being global if we exported them, but local selection is safer.
 
-// Global State (Shared between ui.js and app.js)
-window.transactionToPay = null;
-window.transactionToDelete = null;
-
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('date').valueAsDate = new Date();
     renderList();
@@ -310,8 +306,8 @@ if (transactionForm) {
 // Payment Modal Actions
 document.getElementById('confirmPayment').addEventListener('click', () => {
     try {
-        if (transactionToPay) {
-            const t = transactions.find(t => t.id === transactionToPay);
+        if (window.AppState.transactionToPay) {
+            const t = transactions.find(t => t.id === window.AppState.transactionToPay);
             if (t) {
                 t.isPaid = true;
                 saveData();
@@ -324,20 +320,20 @@ document.getElementById('confirmPayment').addEventListener('click', () => {
         alert('An error occurred while updating the payment status.');
     } finally {
         document.getElementById('paymentModal').classList.add('hidden');
-        transactionToPay = null;
+        window.AppState.transactionToPay = null;
     }
 });
 
 document.getElementById('cancelPayment').addEventListener('click', () => {
     document.getElementById('paymentModal').classList.add('hidden');
-    transactionToPay = null;
+    window.AppState.transactionToPay = null;
 });
 
 // Delete Modal Actions
 document.getElementById('confirmDelete').addEventListener('click', () => {
     try {
-        if (transactionToDelete) {
-            transactions = transactions.filter(t => t.id !== transactionToDelete);
+        if (window.AppState.transactionToDelete) {
+            transactions = transactions.filter(t => t.id !== window.AppState.transactionToDelete);
             saveData();
             updateUI();
         }
@@ -346,13 +342,13 @@ document.getElementById('confirmDelete').addEventListener('click', () => {
         alert('An error occurred while deleting the transaction.');
     } finally {
         document.getElementById('deleteModal').classList.add('hidden');
-        transactionToDelete = null;
+        window.AppState.transactionToDelete = null;
     }
 });
 
 document.getElementById('cancelDelete').addEventListener('click', () => {
     document.getElementById('deleteModal').classList.add('hidden');
-    transactionToDelete = null;
+    window.AppState.transactionToDelete = null;
 });
 
 // Global Click (Close Modals)

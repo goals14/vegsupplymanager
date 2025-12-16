@@ -4,6 +4,13 @@ let savedClients = [];
 let savedSuppliers = [];
 
 // Global State
+// Global State
+window.AppState = {
+    transactionToDelete: null,
+    transactionToPay: null
+};
+
+// Application State (Standard Globals)
 let isPrivacyMode = false; // Global Master
 let isSummaryHidden = false;
 let isListHidden = false;
@@ -11,9 +18,12 @@ let privacyOverrides = new Set(); // Stores IDs of items with toggled state
 let isClientMode = false; // New Mode
 let selectedClient = 'All';
 let isAddingClient = false; // Flag to know if we are adding Client or Supplier
-let transactionToDelete = null;
-let transactionToPay = null;
 let pendingRemittanceIds = []; // Store IDs to mark as paid
+
+
+// Aliases for backward compatibility (optional, but safer to just update usage)
+// We will update usage in app.js and ui.js
+
 
 // Load Data
 try {

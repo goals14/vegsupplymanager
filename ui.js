@@ -438,12 +438,10 @@ window.togglePaymentStatus = (id) => {
     const t = transactions.find(t => t.id === id);
     if (t) {
         if (!t.isPaid) {
-            transactionToPay = id;
-            if (paymentModal) {
-                paymentModal.classList.remove('hidden');
-            } else {
-                console.error('paymentModal is undefined!');
-            }
+            window.AppState.transactionToPay = t.id;
+            // Show Payment Confirmation Modal
+            const modal = document.getElementById('paymentModal');
+            modal.classList.remove('hidden');
         } else {
             showConfirmModal(
                 'Unpay Transaction',
@@ -463,8 +461,8 @@ window.togglePaymentStatus = (id) => {
 
 // Delete Modal
 window.openDeleteModal = (id) => {
-    transactionToDelete = id;
-    deleteModal.classList.remove('hidden');
+    window.AppState.transactionToDelete = id;
+    document.getElementById('deleteModal').classList.remove('hidden');
 };
 
 // Copy Receipt
