@@ -12,12 +12,13 @@
 </head>
 
 <body>
+    <div id="toast-container"></div> <!-- New Toast Container -->
     <div class="app-container">
         <header id="mainHeader">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="logo.png" alt="Terra Oracle" class="app-logo">
                 <h1 id="appTitle" style="margin: 0;">Terra Oracle <span
-                        style="font-size: 12px; opacity: 0.5;">v5.7</span></h1>
+                        style="font-size: 12px; opacity: 0.5; font-family: monospace;">v6.0</span></h1>
             </div>
             <div class="header-actions">
                 <button id="modeBtn" class="icon-btn"
@@ -172,14 +173,37 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Weight (kg)</label>
-                        <input type="number" id="weight" step="0.1" required>
+                        <label>Class/Grade</label>
+                        <select id="grade" style="width:100%;">
+                            <option value="A">Class A</option>
+                            <option value="B">Class B</option>
+                            <option value="Reject">Reject</option>
+                            <option value="Mixed">Mixed</option>
+                        </select>
                     </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sack Count</label>
+                        <input type="number" id="sackCount" placeholder="0" min="0">
+                        <small style="font-size:10px; color:var(--text-muted); display:block; margin-top:2px;">
+                            Auto-deduct 1kg/sack (Tara)
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>Net Weight (kg)</label>
+                        <input type="number" id="weight" step="0.1" required> <!-- This will be Net Weight -->
+                    </div>
+                </div>
+                <div class="form-group" id="drGroup" style="display:none;">
+                    <label>DR Number</label>
+                    <input type="text" id="drNumber" placeholder="Delivery Receipt #">
+                </div>
+                <div class="form-row">
                     <div class="form-group">
                         <label>Cost (₱/kg)</label>
                         <input type="number" id="cost" step="0.1" required>
                     </div>
-                </div>
                 <div class="form-group">
                     <label>Markup (₱/kg)</label>
                     <input type="number" id="markup" step="0.1" value="0">

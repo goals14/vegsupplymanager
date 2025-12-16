@@ -81,7 +81,7 @@ document.getElementById('saveNameBtn').addEventListener('click', () => {
             savedClients.push(name);
             savedClients.sort();
             try { localStorage.setItem('veg_clients', JSON.stringify(savedClients)); } catch (e) { console.warn('Save failed:', e); }
-            alert(`Client "${name}" added!`);
+            showToast(`Client "${name}" added!`, 'success');
             updateLists();
             updateClientSelector();
             // Auto-select the new client
@@ -89,17 +89,17 @@ document.getElementById('saveNameBtn').addEventListener('click', () => {
             selectedClient = name;
             renderClientDashboard();
         } else {
-            alert('Client already exists!');
+            showToast('Client already exists!', 'error');
         }
     } else {
         if (!savedSuppliers.includes(name)) {
             savedSuppliers.push(name);
             savedSuppliers.sort();
             try { localStorage.setItem('veg_suppliers', JSON.stringify(savedSuppliers)); } catch (e) { console.warn('Save failed:', e); }
-            alert(`Supplier "${name}" added!`);
+            showToast(`Supplier "${name}" added!`, 'success');
             updateLists();
         } else {
-            alert('Supplier already exists!');
+            showToast('Supplier already exists!', 'error');
         }
     }
     document.getElementById('nameModal').classList.add('hidden');
@@ -179,7 +179,7 @@ if (generateRemittanceBtn) {
         }
 
         if (relevant.length === 0) {
-            alert('No unpaid transactions found for this selection.');
+            showToast('No unpaid transactions found.', 'error');
             return;
         }
 
@@ -212,7 +212,7 @@ if (generateRemittanceBtn) {
 
         // Copy to Clipboard
         navigator.clipboard.writeText(text).then(() => {
-            alert('Summary copied! Review it below, then click "Mark as PAID" to finish.');
+            showToast('Summary copied! Review below.', 'success');
         });
     });
 }
@@ -230,8 +230,9 @@ if (markPaidBtn) {
                     }
                 });
                 saveData();
+                saveData();
                 updateUI();
-                alert('Items marked as PAID! ✅');
+                showToast('Items marked as PAID! ✅', 'success');
                 document.getElementById('remittanceModal').classList.add('hidden');
             }
         );
@@ -255,40 +256,50 @@ if (transactionForm) {
         const editId = document.getElementById('editTransactionId').value;
         const isEdit = !!editId;
 
+        // Auto-Deduction Logic
+        let weight = parseFloat(document.getElementById('weight').value);
+        const sackCount = parseInt(document.getElementById('sackCount').value) || 0;
+
+        // Use basic assumption: User enters Net Weight directly in the "Net Weight" field
+        // But if they entered a sack count, we assume they might want to deduct?
+        // Actually, the label says "Net Weight", so we trust their input.
+        // We just store the sack count for record.
+
         const transactionData = {
             id: isEdit ? parseInt(editId) : Date.now(),
             date: document.getElementById('date').value,
             category: document.getElementById('category').value,
-            client: document.getElementById('client').value || 'General', // Default to General if empty
+            client: document.getElementById('client').value || 'General',
             supplier: document.getElementById('supplier').value,
             item: document.getElementById('item').value,
-            weight: parseFloat(document.getElementById('weight').value),
+            weight: weight,
+            sackCount: sackCount,
+            grade: document.getElementById('grade').value,
+            drNumber: document.getElementById('drNumber').value,
             cost: parseFloat(document.getElementById('cost').value),
             markup: parseFloat(document.getElementById('markup').value) || 0,
-            isPaid: document.getElementById('isPaidNow').checked, // Capture Checkbox State
-            timestamp: isEdit ? undefined : new Date().toISOString() // Keep original timestamp if edit
+            isPaid: document.getElementById('isPaidNow').checked,
+            timestamp: isEdit ? undefined : new Date().toISOString()
         };
 
         if (isEdit) {
-            // Update existing
             const index = transactions.findIndex(t => t.id === parseInt(editId));
             if (index !== -1) {
-                transactionData.timestamp = transactions[index].timestamp; // Preserve timestamp
+                transactionData.timestamp = transactions[index].timestamp;
                 transactions[index] = transactionData;
             }
         } else {
-            // Add new
             transactions.unshift(transactionData);
         }
 
         saveData();
         updateUI();
-        updateLists(); // Update autocomplete with new entries from transaction
-        updateClientSelector(); // Update dashboard selector
+        updateLists();
+        updateClientSelector();
 
-        // Reset and close
         resetForm();
         document.getElementById('modal').classList.add('hidden');
+        showToast(isEdit ? 'Transaction Updated' : 'Transaction Saved', 'success');
     });
 }
 
@@ -411,9 +422,9 @@ document.getElementById('saveCloudBtn').addEventListener('click', () => {
             // Close modal immediately for better responsiveness
             document.getElementById('cloudModal').classList.add('hidden');
             // Show toast/alert after a slight delay
-            setTimeout(() => alert('Cloud URL saved! Sync started in background ☁️'), 300);
+            setTimeout(() => showToast('Cloud URL saved! Syncing... ☁️', 'success'), 300);
         } else {
-            alert('Please enter a valid URL.');
+            showToast('Please enter a valid URL.', 'error');
         }
 
         // Reset button
@@ -445,7 +456,7 @@ document.getElementById('backupBtn').addEventListener('click', () => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        alert('Backup started! \nFile is downloading to your device.');
+        alert('Backup downloaded! 💾');
         btn.textContent = originalText;
     }, 100);
 });
@@ -470,15 +481,16 @@ document.getElementById('restoreInput').addEventListener('change', (e) => {
                     saveData();
                     updateUI();
                     updateLists();
-                    alert('Data restored successfully! ✅');
+                    updateLists();
+                    showToast('Data restored! ✅');
                     document.getElementById('dataModal').classList.add('hidden');
                 }
             } else {
-                alert('Invalid backup file.');
+                showToast('Invalid backup file.', 'error');
             }
         } catch (err) {
             console.error('Restore failed:', err);
-            alert('Error reading file.');
+            showToast('Error reading file.', 'error');
         } finally {
             e.target.value = ''; // Reset input so same file can be selected again
         }
@@ -488,7 +500,7 @@ document.getElementById('restoreInput').addEventListener('change', (e) => {
 
 document.getElementById('exportCsvBtn').addEventListener('click', () => {
     if (transactions.length === 0) {
-        alert('No data to export.');
+        showToast('No data to export.', 'error');
         return;
     }
 

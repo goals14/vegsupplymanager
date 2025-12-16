@@ -42,6 +42,22 @@ function updateSyncUI(text, color) {
     }
 }
 
+// Toast Notification
+window.showToast = (message, type = 'success') => {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = type === 'success' ? `✅ ${message}` : `⚠️ ${message}`;
+
+    container.appendChild(toast);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+};
+
 // Rendering
 function renderList(filterTerm = '') {
     transactionList.innerHTML = '';
@@ -50,7 +66,7 @@ function renderList(filterTerm = '') {
 
     if (filterTerm) {
         filteredTransactions = transactions.filter(t => {
-            const searchStr = `${t.date} ${t.supplier} ${t.item} ${t.category || ''}`.toLowerCase();
+            const searchStr = `${t.date} ${t.supplier} ${t.item} ${t.category || ''} ${t.drNumber || ''}`.toLowerCase();
             return searchStr.includes(filterTerm);
         });
     }
@@ -66,7 +82,9 @@ function renderList(filterTerm = '') {
 
     filteredTransactions.forEach(t => {
         const totalCost = t.weight * t.cost;
-        const categoryLabel = t.category ? `<span style="font-size: 11px; background: #ecf0f1; padding: 2px 6px; border-radius: 4px; margin-right: 6px;">${t.category}</span>` : '';
+        const categoryLabel = t.category ? `<span class="badge" style="margin-right:6px;">${t.category}</span>` : '';
+        const gradeLabel = t.grade ? `<span class="badge ${t.grade === 'Reject' ? 'danger' : 'success'}">${t.grade}</span>` : '';
+        const drLabel = t.drNumber ? `<span class="text-sm" style="display:block; color:var(--text-muted);">DR# ${t.drNumber}</span>` : '';
 
         // Determine Privacy State for this Item
         const isItemHidden = (isListHidden !== privacyOverrides.has(t.id));
@@ -76,48 +94,46 @@ function renderList(filterTerm = '') {
         const itemEyeIcon = isItemHidden ? '🔒' : '👁️';
 
         if (isItemHidden) {
-            // Mask supplier: "Mang Juan" -> "M..."
             displaySupplier = t.supplier.charAt(0) + '...';
-            // Mask price
             displayPrice = '****';
         }
 
         // Payment Status Logic
         const isPaid = t.isPaid || false;
-        const statusColor = isPaid ? '#27ae60' : '#e74c3c';
-        const statusIcon = isPaid ? '✅' : '🔴';
+        const statusColor = isPaid ? 'var(--primary)' : 'var(--accent-red)';
         const statusText = isPaid ? 'PAID' : 'UNPAID';
+        // const statusIcon = isPaid ? '✅' : '🔴'; // Removed icon, using colored button/border
 
         const card = document.createElement('div');
         card.className = 'transaction-card';
-        card.style.position = 'relative';
-        card.style.borderLeft = `5px solid ${statusColor}`; // Color code the card
+        card.style.borderLeft = `4px solid ${statusColor}`;
 
         card.innerHTML = `
             <div class="card-info">
-                <h3>${categoryLabel}${displaySupplier} <span style="font-size: 0.8em; margin-left: 5px;">${statusIcon}</span></h3>
+                <h3>${categoryLabel}${displaySupplier} <span style="font-size:0.8em; margin-left: auto;">${gradeLabel}</span></h3>
                 <p>${t.item} • ${t.weight}kg ${isItemHidden ? '' : `@ ${formatCurrency(t.cost)}/kg`}</p>
+                ${drLabel}
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <p style="font-size: 12px; margin-top: 4px; color: #7f8c8d;">${t.date}</p>
-                    ${t.timestamp ? `<p style="font-size: 10px; margin-top: 4px; color: #bdc3c7;">Added: ${new Date(t.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}</p>` : ''}
+                    <p class="text-sm">${t.date}</p>
                 </div>
             </div>
             <div class="card-actions">
                 <div class="price-row">
                     <span class="price">${displayPrice}</span>
-                    <button onclick="toggleItemPrivacy(${t.id})" class="privacy-toggle-btn">${itemEyeIcon}</button>
+                    <button onclick="toggleItemPrivacy(${t.id})" class="icon-btn" style="width:24px; height:24px; font-size:12px;">${itemEyeIcon}</button>
                 </div>
-                <div class="action-buttons">
-                    <button onclick="togglePaymentStatus(${t.id})" class="status-btn" style="color: ${statusColor}; border-color: ${statusColor};">${statusText}</button>
-                    <button class="edit-btn" onclick="editTransaction(${t.id})">Edit</button>
-                    <button class="delete-btn" onclick="openDeleteModal(${t.id})">Delete</button>
-                    <button class="copy-btn" onclick="${isPaid ? `copyReceipt(${t.id})` : `alert('🚫 Cannot copy receipt for UNPAID items.\\nPlease pay the supplier first.')`}" style="${isPaid ? '' : 'opacity: 0.5; cursor: not-allowed;'}">Copy Receipt</button>
+                <div class="action-buttons" style="display:flex; gap:8px;">
+                    <button onclick="togglePaymentStatus(${t.id})" class="action-btn pay" style="border-color:${statusColor}; color:${statusColor};">${statusText}</button>
+                    <button class="action-btn" onclick="editTransaction(${t.id})">Edit</button>
+                    <button class="action-btn delete" onclick="openDeleteModal(${t.id})">Del</button>
+                    <button class="action-btn" onclick="${isPaid ? `copyReceipt(${t.id})` : `showToast('Pay first to copy receipt', 'error')`}" style="${isPaid ? '' : 'opacity: 0.5;'}">Receipt</button>
                 </div>
             </div>
         `;
         transactionList.appendChild(card);
     });
 }
+
 
 function updateSummary(filterTerm = '') {
     let filteredTransactions = transactions;
@@ -452,6 +468,7 @@ window.openDeleteModal = (id) => {
 };
 
 // Copy Receipt
+// Copy Receipt
 window.copyReceipt = (id) => {
     const t = transactions.find(trans => trans.id === id);
     if (!t) return;
@@ -461,128 +478,21 @@ window.copyReceipt = (id) => {
 RECEIPT
 Date: ${t.date}
 From: ${t.supplier}
-Item: ${t.item}
+Item: ${t.item} ${t.grade ? `(${t.grade})` : ''}
 Qty: ${t.weight}kg
 Rate: ${formatCurrency(t.cost)}/kg
 Total: ${formatCurrency(totalCost)}
+${t.drNumber ? `DR#: ${t.drNumber}` : ''}
 - Received
     `.trim();
 
     navigator.clipboard.writeText(text).then(() => {
-        alert('Receipt copied to clipboard!');
+        showToast('Receipt copied!', 'success');
     }).catch(err => {
         console.error('Failed to copy: ', err);
-        alert('Could not copy text. Please select and copy manually.');
+        showToast('Failed to copy.', 'error');
     });
 };
-
-// Invoice Generation
-function generateAndCopyInvoice() {
-    const invoiceDateInput = document.getElementById('invoiceDate');
-    const selectedDate = invoiceDateInput.value;
-
-    if (!selectedDate) {
-        alert('Please select a date.');
-        return;
-    }
-
-    // Filter by Date AND Client (if in Client Mode)
-    let relevantTransactions = transactions.filter(t => t.date === selectedDate);
-
-    if (isClientMode && selectedClient !== 'All') {
-        relevantTransactions = relevantTransactions.filter(t => t.client === selectedClient);
-    }
-
-    if (relevantTransactions.length === 0) {
-        alert(`No transactions found for ${selectedDate}!`);
-        return;
-    }
-
-    // Group by Category
-    const grouped = {
-        'Baguio Market': [],
-        'Fixed Priced': [],
-        'Trading Post': []
-    };
-
-    // Also catch any legacy/other categories just in case
-    relevantTransactions.forEach(t => {
-        const cat = t.category || 'Other';
-        if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(t);
-    });
-
-    let invoiceText = `INVOICE\nDate: ${selectedDate}\n`;
-    if (isClientMode && selectedClient !== 'All') {
-        invoiceText += `Client: ${selectedClient}\n`;
-    }
-    invoiceText += `\n`;
-
-    let grandTotal = 0;
-
-    // Build Category Sections
-    for (const [category, items] of Object.entries(grouped)) {
-        if (items.length === 0) continue; // Skip empty categories
-
-        invoiceText += `${category}\n`;
-        items.forEach(t => {
-            const sellingPrice = t.cost + t.markup;
-            const lineTotal = t.weight * sellingPrice;
-            grandTotal += lineTotal;
-            // Format: 100kg Carrots at 30php = 3,000php
-            invoiceText += `${t.weight}kg ${t.item} at ${sellingPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}php = ${lineTotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}php\n`;
-        });
-        invoiceText += '\n';
-    }
-
-    // Add Extra Costs
-    const shortTrip = parseFloat(shortTripInput.value) || 0;
-    const freight = parseFloat(freightInput.value) || 0;
-
-    if (shortTrip > 0) {
-        invoiceText += `Short trip: ${shortTrip.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\n`;
-        grandTotal += shortTrip;
-    }
-
-    if (freight > 0) {
-        invoiceText += `freight: ${freight.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\n`;
-        grandTotal += freight;
-    }
-
-    invoiceText += `\nTOTAL: ${grandTotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}php`;
-
-    // Show Preview
-    const previewEl = document.getElementById('invoicePreview');
-    previewEl.textContent = invoiceText;
-    previewEl.style.display = 'block';
-
-    // Copy to Clipboard
-    navigator.clipboard.writeText(invoiceText).then(() => {
-        alert('Invoice generated! Copied to clipboard.\nYou can also screenshot the preview below.');
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-        alert('Generated! Could not auto-copy. Please select the text below and copy.');
-    });
-}
-
-// Form Logic
-function calculateProfitPreview() {
-    const weight = parseFloat(document.getElementById('weight').value) || 0;
-    const markup = parseFloat(document.getElementById('markup').value) || 0;
-    const totalProfit = weight * markup;
-    document.getElementById('profitPreview').textContent = formatCurrency(totalProfit);
-}
-
-function resetForm() {
-    const transactionForm = document.getElementById('transactionForm');
-    transactionForm.reset();
-    document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('editTransactionId').value = '';
-    document.getElementById('saveBtn').textContent = 'Save Transaction';
-    document.querySelector('.modal-header h2').textContent = 'New Delivery';
-    document.getElementById('isPaidNow').checked = false; // Reset Checkbox
-    calculateProfitPreview();
-}
 
 window.editTransaction = (id) => {
     const t = transactions.find(trans => trans.id === id);
@@ -596,6 +506,20 @@ window.editTransaction = (id) => {
     document.getElementById('weight').value = t.weight;
     document.getElementById('cost').value = t.cost;
     document.getElementById('markup').value = t.markup;
+
+    // New Fields
+    document.getElementById('grade').value = t.grade || 'A';
+    document.getElementById('sackCount').value = t.sackCount || 0;
+    document.getElementById('drNumber').value = t.drNumber || '';
+
+    // Show DR Input if Client is selected
+    const drGroup = document.getElementById('drGroup');
+    if (t.client && t.client !== 'General') {
+        drGroup.style.display = 'block';
+    } else {
+        drGroup.style.display = 'none';
+    }
+
     document.getElementById('editTransactionId').value = t.id;
 
     calculateProfitPreview();
@@ -604,5 +528,5 @@ window.editTransaction = (id) => {
     document.getElementById('saveBtn').textContent = 'Update Transaction';
     document.querySelector('.modal-header h2').textContent = 'Edit Transaction';
 
-    modal.classList.remove('hidden');
+    document.getElementById('modal').classList.remove('hidden');
 };
