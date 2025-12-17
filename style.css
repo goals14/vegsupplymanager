@@ -206,33 +206,75 @@ h1 {
     }
 }
 
-/* --- Cards --- */
-/* Vertical Summary Card Redesign */
-.summary-card.vertical-layout {
-    flex-direction: column;
-    gap: 16px;
-    padding: 20px;
-    align-items: stretch;
+/* --- Stats Grid & Metric Cards --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
-.summary-row {
+.metric-card {
+    background: linear-gradient(145deg, rgba(46, 204, 113, 0.05), rgba(0, 0, 0, 0));
+    border: 1px solid rgba(46, 204, 113, 0.1);
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    border-bottom: 1px solid rgba(46, 204, 113, 0.1);
-    padding-bottom: 12px;
+    gap: 8px;
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s ease, border-color 0.2s;
 }
 
-.summary-row:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+.metric-card:hover {
+    border-color: rgba(46, 204, 113, 0.3);
 }
 
-.row-header {
+.metric-card.highlight {
+    background: linear-gradient(145deg, rgba(46, 204, 113, 0.1), rgba(0, 0, 0, 0));
+    border-color: rgba(46, 204, 113, 0.2);
+}
+
+.card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
+.card-header .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.metric-card .value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Consolas', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+    }
+
+    .metric-card {
+        padding: 14px;
+    }
+
+    .metric-card .value {
+        font-size: 22px;
+    }
+}
+
+
 
 .row-header .label {
     font-size: 11px;

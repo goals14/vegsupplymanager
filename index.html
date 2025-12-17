@@ -18,7 +18,7 @@
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="logo.png" alt="Terra Oracle" class="app-logo">
                 <h1 id="appTitle" style="margin: 0;">Terra Oracle <span
-                        style="font-size: 12px; opacity: 0.5; font-family: monospace;">v6.3.0</span></h1>
+                        style="font-size: 12px; opacity: 0.5; font-family: monospace;">v6.3.1</span></h1>
             </div>
             <div class="header-actions">
                 <button id="modeBtn" class="icon-btn"
@@ -44,34 +44,34 @@
 
         <!-- SUPPLIER VIEW (Default) -->
         <div id="supplierView">
-            <section class="summary-card vertical-layout">
-                <!-- Weight Row -->
-                <div class="summary-row">
-                    <div class="row-header">
+            <div class="stats-grid">
+                <!-- Weight Card -->
+                <div class="metric-card">
+                    <div class="card-header">
                         <span class="label">Total Weight</span>
                         <button id="toggleWeightBtn" class="icon-tiny">👁️</button>
                     </div>
                     <div class="value" id="todayWeight">0 kg</div>
                 </div>
 
-                <!-- Cost Row -->
-                <div class="summary-row">
-                    <div class="row-header">
+                <!-- Cost Card -->
+                <div class="metric-card">
+                    <div class="card-header">
                         <span class="label">Total Cost</span>
                         <button id="toggleCostBtn" class="icon-tiny">👁️</button>
                     </div>
                     <div class="value" id="todayCost">₱0</div>
                 </div>
 
-                <!-- Profit Row -->
-                <div class="summary-row">
-                    <div class="row-header">
+                <!-- Profit Card -->
+                <div class="metric-card highlight">
+                    <div class="card-header">
                         <span class="label">Total Profit</span>
                         <button id="toggleProfitBtn" class="icon-tiny">👁️</button>
                     </div>
                     <div class="value text-green" id="todayProfit">₱0</div>
                 </div>
-            </section>
+            </div>
             <div class="search-container" style="margin-bottom: 16px;">
                 <input type="search" id="searchInput" placeholder="🔍 Search supplier, item, or category..."
                     style="width: 100%; padding: 12px; border: 2px solid var(--light); border-radius: 8px; font-size: 16px;">
@@ -419,10 +419,10 @@
         </div>
     </div>
 
-    <script src="utils.js?v=6.3.0"></script>
-    <script src="storage.js?v=6.3.0"></script>
-    <script src="ui.js?v=6.3.0"></script>
-    <script src="app.js?v=6.3.0"></script>
+    <script src="utils.js?v=6.3.1"></script>
+    <script src="storage.js?v=6.3.1"></script>
+    <script src="ui.js?v=6.3.1"></script>
+    <script src="app.js?v=6.3.1"></script>
 </body>
 
 
