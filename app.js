@@ -19,6 +19,14 @@ function initializeApp() {
         // 2. Attach All Event Listeners
         attachEventListeners();
 
+        // Initialize Summary Visibility State
+        try {
+            const savedVis = localStorage.getItem('veg_summary_vis');
+            window.summaryVisibility = savedVis ? JSON.parse(savedVis) : { weight: true, cost: true, profit: true };
+        } catch (e) {
+            window.summaryVisibility = { weight: true, cost: true, profit: true };
+        }
+
         // 3. Initial Render
         const dateInput = document.getElementById('date');
         if (dateInput) {
@@ -192,6 +200,19 @@ function attachEventListeners() {
             document.getElementById('newNameInput').focus();
         };
     }
+
+    // Summary Visibility Toggles
+    ['toggleWeightBtn', 'toggleCostBtn', 'toggleProfitBtn'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.onclick = () => {
+                const key = id.replace('toggle', '').replace('Btn', '').toLowerCase(); // weight, cost, profit
+                window.summaryVisibility[key] = !window.summaryVisibility[key];
+                localStorage.setItem('veg_summary_vis', JSON.stringify(window.summaryVisibility));
+                updateSummary(document.getElementById('searchInput').value.toLowerCase());
+            };
+        }
+    });
 
     // Close Handler for All Modals (delegate or specific)
     ['closeModal', 'closeNameModal', 'closeDataModal', 'closeInvoiceModal', 'closeRemittanceModal', 'closeCloudModal'].forEach(id => {

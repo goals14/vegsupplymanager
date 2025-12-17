@@ -192,7 +192,6 @@ function updateSummary(filterTerm = '') {
     const totalProfit = filteredTransactions.reduce((sum, t) => sum + (t.weight * t.markup), 0);
 
     // Calculate Outstanding Balance (Unpaid)
-    // Show TOTAL outstanding debt regardless of search filter, but respect Client Mode (hide in client mode)
     const totalUnpaid = transactions
         .filter(t => !t.isPaid)
         .reduce((sum, t) => sum + (t.cost * t.weight), 0);
@@ -209,14 +208,32 @@ function updateSummary(filterTerm = '') {
         }
     }
 
-    todayWeightEl.textContent = `${totalWeight.toFixed(1)} kg`;
+    // Update Vertical Stats with Visibility Check
+    // Default to true if not set (fallback)
+    const vis = window.summaryVisibility || { weight: true, cost: true, profit: true };
 
-    if (isSummaryHidden) {
-        todayCostEl.textContent = '****';
-        todayProfitEl.textContent = '****';
-    } else {
-        todayCostEl.textContent = formatCurrency(totalCost);
-        todayProfitEl.textContent = formatCurrency(totalProfit);
+    if (todayWeightEl) {
+        todayWeightEl.textContent = vis.weight ? `${totalWeight.toLocaleString()} kg` : '------';
+        updateEyeIconState('toggleWeightBtn', vis.weight);
+    }
+
+    if (todayCostEl) {
+        todayCostEl.textContent = vis.cost ? formatCurrency(totalCost) : '₱ --,--';
+        updateEyeIconState('toggleCostBtn', vis.cost);
+    }
+
+    if (todayProfitEl) {
+        todayProfitEl.textContent = vis.profit ? formatCurrency(totalProfit) : '₱ --,--';
+        updateEyeIconState('toggleProfitBtn', vis.profit);
+    }
+}
+
+// Helper to update eye icon visuals
+function updateEyeIconState(btnId, isVisible) {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+        btn.textContent = isVisible ? '👁️' : '🔒';
+        btn.style.opacity = isVisible ? '0.6' : '1';
     }
 }
 
