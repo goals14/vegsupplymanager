@@ -240,15 +240,19 @@ h1 {
     color: var(--primary);
     font-family: 'Consolas', monospace;
     text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
-    word-break: break-all;
-    /* Prevent overflow */
+    white-space: nowrap;
+    /* Prevent wrapping completely */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Ellipsis if it absolutely must */
+    max-width: 100%;
     line-height: 1.2;
 }
 
 @media (max-width: 400px) {
     .summary-item .value {
-        font-size: 16px;
-        /* Smaller font for mobile */
+        font-size: 14px;
+        /* Reduced from 16px */
     }
 
     .summary-item .label {
@@ -257,8 +261,8 @@ h1 {
 
     .summary-card {
         padding: var(--space-md);
-        gap: 4px;
-        /* Reduce gap */
+        gap: 2px;
+        /* Reduced gap */
     }
 }
 
