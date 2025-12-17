@@ -428,6 +428,12 @@ select {
     transition: border 0.2s;
 }
 
+select option {
+    background-color: #2c3e50;
+    /* Match dark theme if possible */
+    color: white;
+}
+
 input:focus,
 select:focus {
     border-color: var(--primary);

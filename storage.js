@@ -1,7 +1,12 @@
 // State Management
-let transactions = [];
-let savedClients = [];
-let savedSuppliers = [];
+// State Management
+var transactions = [];
+var savedClients = [];
+var savedSuppliers = [];
+
+window.transactions = transactions; // Force Global
+window.savedClients = savedClients;
+window.savedSuppliers = savedSuppliers;
 
 // Global State
 // Global State

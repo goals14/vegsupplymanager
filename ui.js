@@ -28,6 +28,7 @@ const dataBtn = document.getElementById('dataBtn');
 const shortTripInput = document.getElementById('shortTripCost');
 const freightInput = document.getElementById('freightCost');
 const cloudBtn = document.getElementById('cloudBtn'); // New Button
+const searchInput = document.getElementById('searchInput');
 
 // Sync UI Helper
 function updateSyncUI(text, color) {
@@ -89,11 +90,16 @@ function renderList(filterTerm = '') {
         // Determine Privacy State for this Item
         const isItemHidden = (isListHidden !== privacyOverrides.has(t.id));
 
-        let displaySupplier = t.supplier;
+        // Draft / Incomplete Check
+        const isDraft = !t.weight || !t.cost || !t.item;
+
+        let displaySupplier = t.supplier || 'Unknown Supplier';
         let displayPrice = formatCurrency(totalCost);
         const itemEyeIcon = isItemHidden ? '🔒' : '👁️';
 
-        if (isItemHidden) {
+        if (isDraft) {
+            displayPrice = '<span style="color:var(--text-muted); font-size:14px;">DRFT</span>';
+        } else if (isItemHidden) {
             displaySupplier = t.supplier.charAt(0) + '...';
             displayPrice = '****';
         }
@@ -102,37 +108,73 @@ function renderList(filterTerm = '') {
         const isPaid = t.isPaid || false;
         const statusColor = isPaid ? 'var(--primary)' : 'var(--accent-red)';
         const statusText = isPaid ? 'PAID' : 'UNPAID';
-        // const statusIcon = isPaid ? '✅' : '🔴'; // Removed icon, using colored button/border
 
         const card = document.createElement('div');
         card.className = 'transaction-card';
-        card.style.borderLeft = `4px solid ${statusColor}`;
+        card.style.borderLeft = `4px solid ${isDraft ? '#f39c12' : statusColor}`; // Orange for draft
+
+        const draftBadge = isDraft ? '<span class="badge danger" style="background:#f39c12; color:black; border:none; margin-right:6px;">DRAFT</span>' : '';
 
         card.innerHTML = `
             <div class="card-info">
-                <h3>${categoryLabel}${displaySupplier} <span style="font-size:0.8em; margin-left: auto;">${gradeLabel}</span></h3>
-                <p>${t.item} • ${t.weight}kg ${isItemHidden ? '' : `@ ${formatCurrency(t.cost)}/kg`}</p>
+                <h3>${draftBadge}${categoryLabel}${displaySupplier} <span style="font-size:0.8em; margin-left: auto;">${gradeLabel}</span></h3>
+                <p>${t.item || 'No Item'} • ${t.weight || 0}kg ${isItemHidden || isDraft ? '' : `@ ${formatCurrency(t.cost)}/kg`}</p>
                 ${drLabel}
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <p class="text-sm">${t.date}</p>
+                    <p class="text-sm">${t.date || 'No Date'}</p>
                 </div>
             </div>
             <div class="card-actions">
                 <div class="price-row">
                     <span class="price">${displayPrice}</span>
-                    <button onclick="toggleItemPrivacy(${t.id})" class="icon-btn" style="width:24px; height:24px; font-size:12px;">${itemEyeIcon}</button>
+                    <button data-action="togglePrivacy" data-id="${t.id}" class="icon-btn" style="width:24px; height:24px; font-size:12px;">${itemEyeIcon}</button>
                 </div>
                 <div class="action-buttons" style="display:flex; gap:8px;">
-                    <button onclick="togglePaymentStatus(${t.id})" class="action-btn pay" style="border-color:${statusColor}; color:${statusColor};">${statusText}</button>
-                    <button class="action-btn" onclick="editTransaction(${t.id})">Edit</button>
-                    <button class="action-btn delete" onclick="openDeleteModal(${t.id})">Del</button>
-                    <button class="action-btn" onclick="${isPaid ? `copyReceipt(${t.id})` : `showToast('Pay first to copy receipt', 'error')`}" style="${isPaid ? '' : 'opacity: 0.5;'}">Receipt</button>
+                    <button data-action="togglePayment" data-id="${t.id}" class="action-btn pay" style="border-color:${statusColor}; color:${statusColor};">${statusText}</button>
+                    <button data-action="edit" data-id="${t.id}" class="action-btn">Edit</button>
+                    <button data-action="delete" data-id="${t.id}" class="action-btn delete">Del</button>
+                    <button data-action="receipt" data-id="${t.id}" class="action-btn" style="${isPaid ? '' : 'opacity: 0.5;'}" ${!isPaid ? 'disabled' : ''}>Receipt</button>
                 </div>
             </div>
         `;
         transactionList.appendChild(card);
     });
 }
+
+// Event Delegation for Transaction List
+transactionList.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const id = parseInt(btn.dataset.id);
+
+    if (isNaN(id)) return;
+
+    switch (action) {
+        case 'togglePrivacy':
+            toggleItemPrivacy(id);
+            break;
+        case 'togglePayment':
+            togglePaymentStatus(id);
+            break;
+        case 'edit':
+            editTransaction(id);
+            break;
+        case 'delete':
+            openDeleteModal(id);
+            break;
+        case 'receipt':
+            // The disabled attribute handles the click prevention, but good to check here too
+            const t = transactions.find(trans => trans.id === id);
+            if (t && t.isPaid) {
+                copyReceipt(id);
+            } else {
+                showToast('Pay first to copy receipt', 'error');
+            }
+            break;
+    }
+});
 
 
 function updateSummary(filterTerm = '') {
@@ -412,9 +454,9 @@ function updateModeUI() {
 
 function updateUI() {
     // Update Icons
-    privacyBtn.textContent = isPrivacyMode ? '🔒' : '👁️';
-    summaryPrivacyBtn.textContent = isSummaryHidden ? '🔒' : '👁️';
-    listPrivacyBtn.textContent = isListHidden ? '🔒' : '👁️';
+    if (privacyBtn) privacyBtn.textContent = isPrivacyMode ? '🔒' : '👁️';
+    if (summaryPrivacyBtn) summaryPrivacyBtn.textContent = isSummaryHidden ? '🔒' : '👁️';
+    if (listPrivacyBtn) listPrivacyBtn.textContent = isListHidden ? '🔒' : '👁️';
 
     // Render
     const term = searchInput.value.toLowerCase();
@@ -423,18 +465,19 @@ function updateUI() {
 }
 
 // Item Privacy Toggle
-window.toggleItemPrivacy = (id) => {
+function toggleItemPrivacy(id) {
     if (privacyOverrides.has(id)) {
         privacyOverrides.delete(id);
     } else {
         privacyOverrides.add(id);
     }
     renderList(searchInput.value.toLowerCase());
-};
+}
 
 // Payment Status Toggle
 // Payment Status Toggle
-window.togglePaymentStatus = (id) => {
+// Payment Status Toggle
+function togglePaymentStatus(id) {
     const t = transactions.find(t => t.id === id);
     if (t) {
         if (!t.isPaid) {
@@ -457,17 +500,32 @@ window.togglePaymentStatus = (id) => {
     } else {
         console.error('Transaction not found for ID:', id);
     }
-};
+}
+
+// Remittance Modal
+function openRemittanceModal() {
+    const select = document.getElementById('remittanceSupplier');
+    if (select) {
+        // Get unique suppliers from transactions
+        const suppliers = [...new Set(transactions.map(t => t.supplier).filter(s => s && s !== 'Unknown'))].sort();
+        select.innerHTML = '<option value="" disabled selected>Select Supplier</option>' +
+            suppliers.map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+    document.getElementById('remittanceModal').classList.remove('hidden');
+}
+window.openRemittanceModal = openRemittanceModal;
 
 // Delete Modal
-window.openDeleteModal = (id) => {
+// Delete Modal
+function openDeleteModal(id) {
     window.AppState.transactionToDelete = id;
     document.getElementById('deleteModal').classList.remove('hidden');
-};
+}
 
 // Copy Receipt
 // Copy Receipt
-window.copyReceipt = (id) => {
+// Copy Receipt
+function copyReceipt(id) {
     const t = transactions.find(trans => trans.id === id);
     if (!t) return;
 
@@ -478,6 +536,7 @@ Date: ${t.date}
 From: ${t.supplier}
 Item: ${t.item} ${t.grade ? `(${t.grade})` : ''}
 Qty: ${t.weight}kg
+Sacks: ${t.sackCount || 0}
 Rate: ${formatCurrency(t.cost)}/kg
 Total: ${formatCurrency(totalCost)}
 ${t.drNumber ? `DR#: ${t.drNumber}` : ''}
@@ -490,9 +549,9 @@ ${t.drNumber ? `DR#: ${t.drNumber}` : ''}
         console.error('Failed to copy: ', err);
         showToast('Failed to copy.', 'error');
     });
-};
+}
 
-window.editTransaction = (id) => {
+function editTransaction(id) {
     const t = transactions.find(trans => trans.id === id);
     if (!t) return;
 
@@ -527,4 +586,4 @@ window.editTransaction = (id) => {
     document.querySelector('.modal-header h2').textContent = 'Edit Transaction';
 
     document.getElementById('modal').classList.remove('hidden');
-};
+}

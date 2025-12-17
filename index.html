@@ -18,7 +18,7 @@
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="logo.png" alt="Terra Oracle" class="app-logo">
                 <h1 id="appTitle" style="margin: 0;">Terra Oracle <span
-                        style="font-size: 12px; opacity: 0.5; font-family: monospace;">v6.1.2</span></h1>
+                        style="font-size: 12px; opacity: 0.5; font-family: monospace;">v6.2.0</span></h1>
             </div>
             <div class="header-actions">
                 <button id="modeBtn" class="icon-btn"
@@ -102,9 +102,10 @@
             </div>
         </section>
 
-        <section class="actions">
-            <button id="clientInvoiceBtn" class="primary-btn" style="background: #2980b9;">🧾 Generate
-                Invoice</button>
+        <section class="actions" style="display: flex; gap: 8px;">
+            <button id="clientInvoiceBtn" class="primary-btn" style="background: #2980b9; flex: 2;">🧾 Invoice</button>
+            <button id="productionBtn" class="primary-btn" style="background: #e67e22; flex: 1; font-size: 14px;">📦
+                Production</button>
         </section>
 
         <!-- TRENDS DASHBOARD -->
@@ -141,16 +142,16 @@
             <form id="transactionForm">
                 <div class="form-group">
                     <label>Date</label>
-                    <input type="date" id="date" required>
+                    <input type="date" id="date">
                 </div>
                 <div class="form-group">
                     <label>Category</label>
                     <select id="category"
-                        style="width: 100%; padding: 12px; border: 2px solid var(--light); border-radius: 8px; font-size: 16px; background: white;"
-                        required>
+                        style="width: 100%; padding: 12px; border: 2px solid var(--light); border-radius: 8px; font-size: 16px; background: white;">
                         <option value="Baguio Market">Baguio Market</option>
                         <option value="Fixed Priced">Fixed Priced</option>
                         <option value="Trading Post">Trading Post</option>
+                        <option value="Trinidad Invoice">Trinidad Invoice</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -162,14 +163,14 @@
                 </div>
                 <div class="form-group">
                     <label>Supplier</label>
-                    <input type="text" id="supplier" placeholder="e.g. Mang Juan" list="supplierList" required>
+                    <input type="text" id="supplier" placeholder="e.g. Mang Juan" list="supplierList">
                     <datalist id="supplierList">
                         <!-- Will be populated dynamically -->
                     </datalist>
                 </div>
                 <div class="form-group">
                     <label>Vegetable</label>
-                    <input type="text" id="item" placeholder="e.g. Carrots" required>
+                    <input type="text" id="item" placeholder="e.g. Carrots">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -191,42 +192,47 @@
                         </small>
                     </div>
                     <div class="form-group">
-                        <label>Net Weight (kg)</label>
-                        <input type="number" id="weight" step="0.1" required> <!-- This will be Net Weight -->
+                        <label>Gross Weight (kg)</label>
+                        <input type="number" id="grossWeight" step="0.1" placeholder="Optional">
                     </div>
-                </div>
-                <div class="form-group" id="drGroup" style="display:none;">
-                    <label>DR Number</label>
-                    <input type="text" id="drNumber" placeholder="Delivery Receipt #">
-                </div>
-                <div class="form-row">
                     <div class="form-group">
-                        <label>Cost (₱/kg)</label>
-                        <input type="number" id="cost" step="0.1" required>
+                        <div class="form-group">
+                            <label>Net Weight (kg)</label>
+                            <input type="number" id="weight" step="0.1"> <!-- This will be Net Weight -->
+                        </div>
+                    </div>
+                    <div class="form-group" id="drGroup" style="display:none;">
+                        <label>DR Number</label>
+                        <input type="text" id="drNumber" placeholder="Delivery Receipt #">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Markup (₱/kg)</label>
-                            <input type="number" id="markup" step="0.1" value="0">
+                            <label>Cost (₱/kg)</label>
+                            <input type="number" id="cost" step="0.1">
                         </div>
-                        <div class="form-group">
-                            <label>Est. Profit</label>
-                            <div class="readonly-field" id="profitPreview">₱0.00</div>
-                        </div>
-                    </div>
-
-                    <div class="checkbox-card-wrapper">
-                        <input type="checkbox" id="isPaidNow" class="custom-checkbox">
-                        <label for="isPaidNow" class="checkbox-label">
-                            <span class="check-icon">💵</span>
-                            <div class="check-text">
-                                <span class="check-title">Mark as Paid</span>
-                                <span class="check-subtitle">Cash payment immediately</span>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Markup (₱/kg)</label>
+                                <input type="number" id="markup" step="0.1" value="0">
                             </div>
-                        </label>
-                    </div>
-                    <button id="saveBtn" type="submit" class="save-btn">Save Transaction</button>
-                    <input type="hidden" id="editTransactionId">
+                            <div class="form-group">
+                                <label>Est. Profit</label>
+                                <div class="readonly-field" id="profitPreview">₱0.00</div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-card-wrapper">
+                            <input type="checkbox" id="isPaidNow" class="custom-checkbox">
+                            <label for="isPaidNow" class="checkbox-label">
+                                <span class="check-icon">💵</span>
+                                <div class="check-text">
+                                    <span class="check-title">Mark as Paid</span>
+                                    <span class="check-subtitle">Cash payment immediately</span>
+                                </div>
+                            </label>
+                        </div>
+                        <button id="saveBtn" type="button" class="save-btn">Save Transaction</button>
+                        <input type="hidden" id="editTransactionId">
             </form>
         </div>
     </div>
@@ -262,7 +268,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Confirm Payment</h2>
+                <button id="closePaymentModal" class="close-btn">&times;</button>
             </div>
+
             <p style="margin-bottom: 20px; font-size: 16px;">Mark this transaction as <strong>PAID</strong>?</p>
             <div style="display: flex; gap: 12px;">
                 <button id="cancelPayment" class="primary-btn" style="background: #95a5a6;">Cancel</button>
@@ -399,10 +407,11 @@
         </div>
     </div>
 
-    <script src="utils.js?v=6.1.2"></script>
-    <script src="storage.js?v=6.1.2"></script>
-    <script src="ui.js?v=6.1.2"></script>
-    <script src="app.js?v=6.1.2"></script>
+    <script src="utils.js?v=6.2.0"></script>
+    <script src="storage.js?v=6.2.0"></script>
+    <script src="ui.js?v=6.2.0"></script>
+    <script src="app.js?v=6.2.0"></script>
 </body>
+
 
 </html>
