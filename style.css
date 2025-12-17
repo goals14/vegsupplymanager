@@ -250,19 +250,28 @@ h1 {
 }
 
 @media (max-width: 400px) {
+    .summary-item {
+        min-width: 0;
+        /* Critical for text-overflow to work in flex */
+        padding: 0 2px;
+    }
+
     .summary-item .value {
-        font-size: 14px;
-        /* Reduced from 16px */
+        font-size: 12px !important;
+        /* Force smaller */
+        font-weight: 600;
     }
 
     .summary-item .label {
-        font-size: 10px;
+        font-size: 9px;
+        letter-spacing: 0;
+        /* Save space */
     }
 
     .summary-card {
-        padding: var(--space-md);
-        gap: 2px;
-        /* Reduced gap */
+        padding: 12px 8px;
+        /* Tighter padding */
+        gap: 0;
     }
 }
 
